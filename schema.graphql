@@ -1,0 +1,39 @@
+type LootInfo @entity {
+  id: ID!
+  txHash: String!
+  user: String! @index
+  captainId: Int! @index
+  guarResult: GuarResult!
+  lootResults: [LootResult]!
+  levelResult: LevelResult
+  payLoot: PayLoot
+  claim: Claim
+}
+
+type PayLoot {
+  amount: BigInt!
+  usdc: Boolean!
+}
+
+type LootResult {
+  slot: BigInt!
+  balance: Int!
+}
+
+type GuarResult {
+  user: String!
+  newSSGuar: Int!
+  newSSSGuar: Int!
+  isUpSSS: Boolean!
+}
+
+type LevelResult {
+  nftId: BigInt!
+  newLevel: Int!
+  newExp: Int!
+}
+
+type Claim {
+  amount: BigInt!
+  batch: BigInt!
+}
