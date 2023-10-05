@@ -137,6 +137,7 @@ processor.run(new TypeormDatabase({ supportHotBlocks: true }), async (ctx) => {
         new LootInfo({
           id: txId,
           txHash: data.hash,
+          timestamp: BigInt(block.header.timestamp / 1000),
           user: guarResult.user,
           captainId,
           payLoot,

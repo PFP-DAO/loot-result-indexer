@@ -1,6 +1,7 @@
 type LootInfo @entity {
   id: ID!
   txHash: String!
+  timestamp: BigInt!
   user: String! @index
   captainId: Int! @index
   guarResult: GuarResult!
