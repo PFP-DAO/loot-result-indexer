@@ -7,7 +7,7 @@ import {
   LootResult,
   PayLoot,
 } from "./model";
-import { processor } from "./processor";
+import { commonPoolAddress, processor, upPoolAddress } from "./processor";
 import * as lootAbi from "./abi/loot";
 import * as roleAbi from "./abi/role";
 import * as dividendAbi from "./abi/dividend";
@@ -32,10 +32,8 @@ processor.run(new TypeormDatabase({ supportHotBlocks: true }), async (ctx) => {
           log.topics[0] === lootAbi.events.GuarResult.topic ||
           log.topics[0] === dividendAbi.events.Claim.topic ||
           log.topics[0] === roleAbi.events.LevelResult.topic) &&
-        (log.transaction?.to?.toLowerCase() ===
-          "0x0faf09ed08d2ec65982088f12e3bab7e7cb2945f" ||
-          log.transaction?.to?.toLowerCase() ===
-            "0xe9728ed5e1fd05665c44a17082d77049801435f0")
+        (log.transaction?.to === upPoolAddress.toLocaleLowerCase() ||
+          log.transaction?.to === commonPoolAddress.toLowerCase())
     );
 
     const logsMap = new Map<string, validLogsGroupByTxHash>();
@@ -135,8 +133,7 @@ processor.run(new TypeormDatabase({ supportHotBlocks: true }), async (ctx) => {
 
       lootInfos.push(
         new LootInfo({
-          id: txId,
-          txHash: data.hash,
+          id: data.hash,
           timestamp: BigInt(block.header.timestamp / 1000),
           user: guarResult.user,
           captainId,

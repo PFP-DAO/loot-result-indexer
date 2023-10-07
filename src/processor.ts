@@ -11,6 +11,11 @@ import * as lootAbi from "./abi/loot";
 import * as roleAbi from "./abi/role";
 import * as dividendAbi from "./abi/dividend";
 
+export const commonPoolAddress = "0x0FAF09eD08D2Ec65982088f12E3Bab7e7Cb2945f"; // common pool
+export const upPoolAddress = "0xE9728Ed5E1FD05665C44a17082d77049801435f0"; // up pool
+export const roleAddress = "0xbE0A8ce3Ca98d5806B7f8dA015eaBcFb4738592A"; // role
+export const dividendAddress = "0x1439d7daD45C248D94Dd553f0C02FDA8F1f54676"; // dividend
+
 export const processor = new EvmBatchProcessor()
   .setDataSource({
     // Change the Archive endpoints for run the squid
@@ -21,7 +26,7 @@ export const processor = new EvmBatchProcessor()
 
     // Must be set for RPC ingestion (https://docs.subsquid.io/evm-indexing/evm-processor/)
     // OR to enable contract state queries (https://docs.subsquid.io/evm-indexing/query-state/)
-    chain: "https://rpc.ankr.com/polygon",
+    chain: "https://polygon-rpc.com",
   })
   .setFinalityConfirmation(120)
   .setFields({
@@ -36,10 +41,10 @@ export const processor = new EvmBatchProcessor()
   })
   .addLog({
     address: [
-      "0x0FAF09eD08D2Ec65982088f12E3Bab7e7Cb2945f", // common pool
-      "0xE9728Ed5E1FD05665C44a17082d77049801435f0", // up pool
-      "0xbE0A8ce3Ca98d5806B7f8dA015eaBcFb4738592A", // role
-      "0x1439d7daD45C248D94Dd553f0C02FDA8F1f54676", // dividend
+      commonPoolAddress, // common pool
+      upPoolAddress, // up pool
+      roleAddress, // role
+      dividendAddress, // dividend
     ],
     topic0: [
       lootAbi.events.PayLoot.topic, // PayLoot
@@ -52,10 +57,7 @@ export const processor = new EvmBatchProcessor()
   })
   .setFields({
     log: {
-      topics: true,
-    },
-    transaction: {
-      input: true,
+      transactionHash: true,
     },
   });
 

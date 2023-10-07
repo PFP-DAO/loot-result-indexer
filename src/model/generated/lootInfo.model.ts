@@ -15,9 +15,6 @@ export class LootInfo {
     @PrimaryColumn_()
     id!: string
 
-    @Column_("text", {nullable: false})
-    txHash!: string
-
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
     timestamp!: bigint
 

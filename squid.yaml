@@ -1,6 +1,6 @@
 manifestVersion: subsquid.io/v0.1
 name: pfpdao-lootresult
-version: 1
+version: 3
 description: "pfpdao loot history"
 build:
 deploy:
@@ -22,3 +22,11 @@ deploy:
       - "100"
       - "--dumb-cache-max-age"
       - "1000"
+scale:
+  dedicated: true
+  addons:
+    postgres:
+      storage: 5G
+      profile: small
+  processor:
+    profile: small
