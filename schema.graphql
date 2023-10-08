@@ -8,6 +8,7 @@ type LootInfo @entity {
   levelResult: LevelResult
   payLoot: PayLoot
   claim: Claim
+  pool: String!
 }
 
 type PayLoot {

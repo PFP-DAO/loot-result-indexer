@@ -142,6 +142,7 @@ processor.run(new TypeormDatabase({ supportHotBlocks: true }), async (ctx) => {
           levelResult,
           lootResults,
           claim,
+          pool: data.address,
         })
       );
     }

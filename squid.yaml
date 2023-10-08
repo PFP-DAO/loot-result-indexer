@@ -1,6 +1,6 @@
 manifestVersion: subsquid.io/v0.1
 name: pfpdao-lootresult
-version: 3
+version: 4
 description: "pfpdao loot history"
 build:
 deploy:

@@ -40,4 +40,7 @@ export class LootInfo {
 
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Claim(undefined, obj)}, nullable: true})
     claim!: Claim | undefined | null
+
+    @Column_("text", {nullable: false})
+    pool!: string
 }
