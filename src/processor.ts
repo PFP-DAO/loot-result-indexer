@@ -18,17 +18,10 @@ export const dividendAddress = "0x1439d7daD45C248D94Dd553f0C02FDA8F1f54676"; // 
 
 export const processor = new EvmBatchProcessor()
   .setDataSource({
-    // Change the Archive endpoints for run the squid
-    // against the other EVM networks
-    // For a full list of supported networks and config options
-    // see https://docs.subsquid.io/evm-indexing/
-    archive: lookupArchive("polygon"),
-
-    // Must be set for RPC ingestion (https://docs.subsquid.io/evm-indexing/evm-processor/)
-    // OR to enable contract state queries (https://docs.subsquid.io/evm-indexing/query-state/)
+    archive: lookupArchive("polygon", { release: "ArrowSquid" }),
     chain: "https://polygon-rpc.com",
   })
-  .setFinalityConfirmation(120)
+  .setFinalityConfirmation(200)
   .setFields({
     transaction: {
       from: true,
