@@ -16,7 +16,6 @@ type validLogsGroupByTxHash = {
   address: string;
   hash: string;
   logs: {
-    logIndex: number;
     topics: string[];
     data: string;
   }[];
@@ -32,41 +31,35 @@ processor.run(new TypeormDatabase({ supportHotBlocks: true }), async (ctx) => {
           log.topics[0] === lootAbi.events.GuarResult.topic ||
           log.topics[0] === dividendAbi.events.Claim.topic ||
           log.topics[0] === roleAbi.events.LevelResult.topic) &&
-        (log.transaction?.to === upPoolAddress.toLocaleLowerCase() ||
+        (log.transaction?.to === upPoolAddress.toLowerCase() ||
           log.transaction?.to === commonPoolAddress.toLowerCase())
     );
+    if (validLogs.length === 0) continue;
 
     const logsMap = new Map<string, validLogsGroupByTxHash>();
 
     validLogs.forEach((log) => {
-      const txHash = log.transaction?.hash;
-      const txId = log.transaction?.id;
+      const txHash = log.transaction?.hash!;
 
-      if (!txHash || !txId) {
-        return;
-      }
-
-      if (!logsMap.has(txId)) {
-        logsMap.set(txId, {
+      if (!logsMap.has(txHash)) {
+        logsMap.set(txHash, {
           address: log.address,
           hash: txHash,
           logs: [],
         });
       }
 
-      const logItem = {
-        logIndex: log.logIndex,
+      logsMap.get(txHash)?.logs.push({
         topics: log.topics,
         data: log.data,
-      };
-
-      logsMap.get(txId)?.logs.push(logItem);
+      });
     });
 
     const dataSource = [...logsMap.values()];
+
     if (dataSource.length === 0) continue;
 
-    for (let [txId, data] of logsMap.entries()) {
+    for (let data of logsMap.values()) {
       // LootResult
       const lootResults = data.logs
         .filter((log) => log.topics[0] === lootAbi.events.LootResult.topic)
@@ -131,22 +124,21 @@ processor.run(new TypeormDatabase({ supportHotBlocks: true }), async (ctx) => {
           })
         : undefined;
 
-      lootInfos.push(
-        new LootInfo({
-          id: data.hash,
-          timestamp: BigInt(block.header.timestamp / 1000),
-          user: guarResult.user,
-          captainId,
-          payLoot,
-          guarResult,
-          levelResult,
-          lootResults,
-          claim,
-          pool: data.address,
-        })
-      );
+      const newLoot = new LootInfo({
+        id: data.hash,
+        timestamp: BigInt(block.header.timestamp / 1000),
+        user: guarResult.user,
+        captainId,
+        payLoot,
+        guarResult,
+        levelResult,
+        lootResults,
+        claim,
+        pool: data.address,
+      });
+      lootInfos.push(newLoot);
+      ctx.log.info(`New loot: ${data.hash}`);
     }
-
     console.log(
       `Add ${dataSource.length} lootInfos to database at block ${block.header.height}`
     );
