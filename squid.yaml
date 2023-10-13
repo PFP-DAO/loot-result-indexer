@@ -1,7 +1,7 @@
 manifestVersion: subsquid.io/v0.1
-name: pfpdao-lootresult
-version: 9
-description: "pfpdao loot history"
+name: pfpdao-indexer
+version: 1
+description: "pfp-dao.io indexer"
 build:
 deploy:
   addons:

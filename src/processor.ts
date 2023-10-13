@@ -12,7 +12,7 @@ import * as roleAbi from "./abi/role";
 import * as dividendAbi from "./abi/dividend";
 
 const isTestnet = false;
-const fromBlock = isTestnet ? 41014524 : 46995372;
+const fromBlock = isTestnet ? 41014524 : 42933111;
 
 export const commonPoolAddress = isTestnet
   ? "0xa211D9cB24FE7e82cC9b03E7B724ECB7687b7021"

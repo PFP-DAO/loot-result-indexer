@@ -1,13 +1,19 @@
 import { TypeormDatabase } from "@subsquid/typeorm-store";
 import {
   Claim,
+  ClaimLog,
   GuarResult,
   LevelResult,
   LootInfo,
   LootResult,
   PayLoot,
 } from "./model";
-import { commonPoolAddress, processor, upPoolAddress } from "./processor";
+import {
+  commonPoolAddress,
+  dividendAddress,
+  processor,
+  upPoolAddress,
+} from "./processor";
 import * as lootAbi from "./abi/loot";
 import * as roleAbi from "./abi/role";
 import * as dividendAbi from "./abi/dividend";
@@ -23,7 +29,39 @@ type validLogsGroupByTxHash = {
 
 processor.run(new TypeormDatabase({ supportHotBlocks: true }), async (ctx) => {
   const lootInfos: LootInfo[] = [];
+  let claimInfos: Map<string, ClaimLog> = new Map();
   for (let block of ctx.blocks) {
+    // claim
+    for (let log of block.logs) {
+      if (
+        log.address === dividendAddress.toLocaleLowerCase() &&
+        log.topics[0] === dividendAbi.events.Claim.topic
+      ) {
+        let { user, roleId, amount, batch } =
+          dividendAbi.events.Claim.decode(log);
+        const hash = log.transaction?.hash!;
+        claimInfos.set(
+          hash,
+          new ClaimLog({
+            id: hash,
+            block: block.header.height,
+            timestamp: new Date(block.header.timestamp),
+            user,
+            roleId,
+            amount,
+            batch,
+          })
+        );
+      }
+    }
+    if (claimInfos.size > 0) {
+      console.log(
+        `Add ${claimInfos.size} claimInfos to database at block ${block.header.height}`
+      );
+      await ctx.store.upsert([...claimInfos.values()]);
+    }
+
+    // loot
     const validLogs = block.logs.filter(
       (log) =>
         (log.topics[0] === lootAbi.events.PayLoot.topic ||

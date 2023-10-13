@@ -11,6 +11,16 @@ type LootInfo @entity {
   pool: String!
 }
 
+type ClaimLog @entity {
+  id: ID!
+  block: Int!
+  timestamp: DateTime!
+  user: String! @index
+  roleId: Int! @index
+  amount: BigInt!
+  batch: BigInt!
+}
+
 type PayLoot {
   amount: BigInt!
   usdc: Boolean!
