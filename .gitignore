@@ -7,3 +7,4 @@
 # IDE files
 /.idea
 .DS_Store
+db/
